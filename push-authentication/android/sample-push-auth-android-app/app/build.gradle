@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+android {
+	compileSdkVersion compileAndTargetSdkVersion
+	buildToolsVersion '30.0.3'
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	defaultConfig {
+		applicationId "com.example.fcm"
+		minSdkVersion 26
+		targetSdkVersion compileAndTargetSdkVersion
+		versionCode 1
+		versionName "1.0"
+		resConfigs('en', 'xxxhdpi')
+		ndk {
+			abiFilters "x86", "x86_64", "arm64-v8a", "armeabi-v7a"
+		}
+	}
+
+	buildTypes {
+		release {
+			minifyEnabled true
+			shrinkResources true
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+		}
+		debug {
+			splits.abi.enable = false
+			splits.density.enable = false
+			aaptOptions.cruncherEnabled = false
+		}
+	}
+
+	dexOptions {
+		preDexLibraries true
+		maxProcessCount 8
+	}
+}
+
+dependencies {
+	implementation 'androidx.appcompat:appcompat:1.2.0'
+	implementation 'com.google.firebase:firebase-analytics:18.0.3'
+	implementation 'com.google.firebase:firebase-messaging:21.1.0'
+	implementation 'com.auth0:java-jwt:3.18.2'
+	implementation 'com.squareup.okhttp3:okhttp:3.12.13'
+}
