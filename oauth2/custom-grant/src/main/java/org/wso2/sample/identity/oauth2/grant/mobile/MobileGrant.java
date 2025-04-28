@@ -60,6 +60,7 @@ public class MobileGrant extends AbstractAuthorizationGrantHandler  {
             if(MOBILE_GRANT_PARAM.equals(parameter.getKey())){
                 if(parameter.getValue() != null && parameter.getValue().length > 0){
                     mobileNumber = parameter.getValue()[0];
+                    log.info("Mobile number: " + mobileNumber);
                 }
             }
         }
@@ -69,6 +70,7 @@ public class MobileGrant extends AbstractAuthorizationGrantHandler  {
             authStatus =  isValidMobileNumber(mobileNumber);
 
             if(authStatus) {
+                log.info("Mobile number is valid.");
                 // if valid set authorized mobile number as grant user
                 String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(mobileNumber);
                 /*
@@ -83,6 +85,7 @@ public class MobileGrant extends AbstractAuthorizationGrantHandler  {
                 oAuthTokenReqMessageContext.setAuthorizedUser(mobileUser);
                 oAuthTokenReqMessageContext.setScope(oAuthTokenReqMessageContext.getOauth2AccessTokenReqDTO().getScope());
             } else{
+                log.info("Mobile number is NOT valid.");
                 ResponseHeader responseHeader = new ResponseHeader();
                 responseHeader.setKey("SampleHeader-999");
                 responseHeader.setValue("Provided Mobile Number is Invalid.");
@@ -115,18 +118,6 @@ public class MobileGrant extends AbstractAuthorizationGrantHandler  {
         // if we need to verify with the end user's access delegation by calling callback chain.
         // However, you need to register a callback for this. Default call back just return true.
 
-
-//        OAuthCallback authzCallback = new OAuthCallback(
-//                tokReqMsgCtx.getAuthorizedUser(),
-//                tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId(),
-//                OAuthCallback.OAuthCallbackType.ACCESS_DELEGATION_TOKEN);
-//        authzCallback.setRequestedScope(tokReqMsgCtx.getScope());
-//        authzCallback.setCarbonGrantType(org.wso2.carbon.identity.oauth.common.GrantType.valueOf(tokReqMsgCtx.
-//                                                            getOauth2AccessTokenReqDTO().getGrantType()));
-//        callbackManager.handleCallback(authzCallback);
-//        tokReqMsgCtx.setValidityPeriod(authzCallback.getValidityPeriod());
-//        return authzCallback.isAuthorized();
-
     }
 
 
@@ -143,29 +134,18 @@ public class MobileGrant extends AbstractAuthorizationGrantHandler  {
         // you can find more details on writing custom scope validator from here
         // http://xacmlinfo.org/2014/10/24/authorization-for-apis-with-xacml-and-oauth-2-0/
 
-//        OAuthCallback scopeValidationCallback = new OAuthCallback(
-//                tokReqMsgCtx.getAuthorizedUser().toString(),
-//                tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId(),
-//                OAuthCallback.OAuthCallbackType.SCOPE_VALIDATION_TOKEN);
-//        scopeValidationCallback.setRequestedScope(tokReqMsgCtx.getScope());
-//        scopeValidationCallback.setCarbonGrantType(org.wso2.carbon.identity.oauth.common.GrantType.valueOf(tokReqMsgCtx.
-//                                                            getOauth2AccessTokenReqDTO().getGrantType()));
-//
-//        callbackManager.handleCallback(scopeValidationCallback);
-//        tokReqMsgCtx.setValidityPeriod(scopeValidationCallback.getValidityPeriod());
-//        tokReqMsgCtx.setScope(scopeValidationCallback.getApprovedScope());
-//        return scopeValidationCallback.isValidScope();
     }
 
-
-
     /**
-     * You need to implement how to validate the mobile number
+     * Expects a 10 digit mobile number or 10 digits with 1-3 digit country code
+     * Ex: 1234567890, +11234567890, +911234567890, +3581234567890 
      *
      * @param mobileNumber Mobile number of the user.
      * @return true if the mobile number is valid, otherwise false.
      */
     private boolean isValidMobileNumber(String mobileNumber){
+
+        log.info("Validating mobile number.");
 
         // Regular expression to match 10 digits, with optional country code
         String pattern = "^(\\+\\d{1,3})?\\d{10}$";
